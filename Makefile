@@ -34,6 +34,17 @@ CFLAGS += -DSTM8S103  # Change according to your MCU
 # Linker flags
 LDFLAGS = -mstm8 -lstm8 --out-fmt-ihx
 
+# Platform-specific command shortcuts (Windows vs Unix)
+ifeq ($(OS),Windows_NT)
+  MKDIR_CORE = @cmd /C "if not exist $(subst /,\\,$(BUILD_DIR))\core mkdir $(subst /,\\,$(BUILD_DIR))\core"
+  MKDIR_SPL  = @cmd /C "if not exist $(subst /,\\,$(BUILD_DIR))\spl mkdir $(subst /,\\,$(BUILD_DIR))\spl"
+  RM_CMD     = @cmd /C "if exist $(subst /,\\,$(BUILD_DIR)) rmdir /S /Q $(subst /,\\,$(BUILD_DIR))"
+else
+  MKDIR_CORE = @mkdir -p $(BUILD_DIR)/core
+  MKDIR_SPL  = @mkdir -p $(BUILD_DIR)/spl
+  RM_CMD     = @rm -rf $(BUILD_DIR)
+endif
+
 # Target
 TARGET = main
 
@@ -43,10 +54,10 @@ all: $(BUILD_DIR)/$(TARGET).ihx
 
 # Create build directories
 $(BUILD_DIR)/core:
-	@mkdir -p $(BUILD_DIR)/core
+	$(MKDIR_CORE)
 
 $(BUILD_DIR)/spl:
-	@mkdir -p $(BUILD_DIR)/spl
+	$(MKDIR_SPL)
 
 # Compile Core sources
 $(BUILD_DIR)/core/%.rel: $(SRC_DIR)/%.c | $(BUILD_DIR)/core
@@ -64,7 +75,11 @@ $(BUILD_DIR)/$(TARGET).ihx: $(ALL_OBJS)
 	$(CC) $(LDFLAGS) $(ALL_OBJS) -o $@
 	@echo "Build complete: $@"
 	@echo "Size information:"
+ifeq ($(OS),Windows_NT)
+	@powershell -NoProfile -Command "Get-Item '$(subst /,\\,$@)' | Select-Object Name,Length"
+else
 	@ls -lh $@
+endif
 
 # Flash to MCU
 flash: $(BUILD_DIR)/$(TARGET).ihx
@@ -74,7 +89,7 @@ flash: $(BUILD_DIR)/$(TARGET).ihx
 # Clean build files
 clean:
 	@echo "Cleaning build files..."
-	rm -rf $(BUILD_DIR)
+	$(RM_CMD)
 	@echo "Clean complete"
 
 # For debugging
