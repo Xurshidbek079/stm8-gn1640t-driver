@@ -1,9 +1,0 @@
-# Build artifacts
-Build/
-
-# VS Code
-.vscode/
-*.code-workspace
-
-# GitHub
-.github/
