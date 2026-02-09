@@ -1,14 +1,5 @@
-/**
-  ******************************************************************************
-  * @file    main.c
-  * @brief   Example usage of GN1640T driver
-  * @author  Xurshid
-  * @date    2026
-  ******************************************************************************
-  */
-
-  #include "stm8s.h"
-  #include "gn1640t.h"
+#include "stm8s.h"
+#include "gn1640t.h"
   
   /**
    * @brief Simple millisecond delay
@@ -130,11 +121,13 @@
    * @brief Example 6: Custom segment patterns
    */
   void Example_CustomPattern(void) {
+      uint16_t pattern;
+
       GN1640_Clear();
-      
+
       // Turn on specific segments manually
       // Example: Create a custom pattern on digit 0
-      uint16_t pattern = SEG(1) | SEG(5) | SEG(9) | SEG(13);
+      pattern = SEG(1) | SEG(5) | SEG(9) | SEG(13);
       GN1640_SetDigitSegments(0, pattern);
       
       GN1640_UpdateDisplay();
@@ -157,7 +150,8 @@
           
           // Display 6 characters starting from offset
           for (i = 0; i < 6; i++) {
-              uint8_t ch_idx = (offset + i) % 16;  // Wrap around
+              uint8_t ch_idx;
+              ch_idx = (offset + i) % 16;  // Wrap around
               GN1640_DisplayChar(i, text[ch_idx]);
           }
           

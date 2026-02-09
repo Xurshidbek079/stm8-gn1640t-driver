@@ -77,7 +77,7 @@
   /* LOW-LEVEL COMMUNICATION FUNCTIONS                                          */
   /*============================================================================*/
   
-  void delay_us(uint16_t us) {
+  static void gn1640_delay_us(uint16_t us) {
       uint16_t i;
       // Adjust for 16MHz HSI clock - approximately 4 cycles per loop
       for (i = 0; i < us; i++) {
@@ -91,20 +91,20 @@
   void GN1640_Start(void) {
       GPIO_WriteHigh(GN1640_PORT, GN1640_DATA_PIN);
       GPIO_WriteHigh(GN1640_PORT, GN1640_CLK_PIN);
-      delay_us(2);
+      gn1640_delay_us(2);
       GPIO_WriteLow(GN1640_PORT, GN1640_DATA_PIN);
-      delay_us(2);
+      gn1640_delay_us(2);
   }
   
   void GN1640_Stop(void) {
       GPIO_WriteLow(GN1640_PORT, GN1640_CLK_PIN);
-      delay_us(2);
+      gn1640_delay_us(2);
       GPIO_WriteLow(GN1640_PORT, GN1640_DATA_PIN);
-      delay_us(2);
+      gn1640_delay_us(2);
       GPIO_WriteHigh(GN1640_PORT, GN1640_CLK_PIN);
-      delay_us(2);
+      gn1640_delay_us(2);
       GPIO_WriteHigh(GN1640_PORT, GN1640_DATA_PIN);
-      delay_us(2);
+      gn1640_delay_us(2);
   }
   
   void GN1640_WriteByte(uint8_t data) {
@@ -114,7 +114,7 @@
       
       for (i = 0; i < 8; i++) {
           GPIO_WriteLow(GN1640_PORT, GN1640_CLK_PIN);
-          delay_us(1);
+          gn1640_delay_us(1);
           
           // Write bit (LSB first)
           if (data & 0x01) {
@@ -123,9 +123,9 @@
               GPIO_WriteLow(GN1640_PORT, GN1640_DATA_PIN);
           }
           
-          delay_us(1);
+          gn1640_delay_us(1);
           GPIO_WriteHigh(GN1640_PORT, GN1640_CLK_PIN);
-          delay_us(1);
+          gn1640_delay_us(1);
           
           data >>= 1;
       }
@@ -150,7 +150,7 @@
       GPIO_WriteHigh(GN1640_PORT, GN1640_CLK_PIN);
       GPIO_WriteHigh(GN1640_PORT, GN1640_DATA_PIN);
       
-      delay_us(100);
+      gn1640_delay_us(100);
       
       // Initialize GN1640T controller
       GN1640_SendCommand(CMD_DATA_SET | 0x00);  // Auto address increment mode

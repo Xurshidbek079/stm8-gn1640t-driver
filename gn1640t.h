@@ -207,13 +207,6 @@
    */
   void GN1640_SendCommand(uint8_t cmd);
   
-  /**
-   * @brief Microsecond delay
-   * @param us: Delay in microseconds (approximate)
-   * @note Adjust delay_us() implementation for your clock frequency
-   */
-  void delay_us(uint16_t us);
-  
   /*============================================================================*/
   /* BUFFER MANIPULATION FUNCTIONS                                              */
   /*============================================================================*/
