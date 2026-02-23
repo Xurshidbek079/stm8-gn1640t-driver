@@ -250,6 +250,18 @@ void main(void) {
     /* Initialize system clock (16MHz HSI) */
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 
+    /* Initialize I2C peripheral on PB4 (SCL) / PB5 (SDA).
+     * GN1640T is NOT standard I2C - GN1640_Start() disables the hardware
+     * I2C peripheral and bit-bangs the display (LSB-first, no ACK).
+     * GN1640_Stop() re-enables it. The peripheral must be initialized so
+     * that I2C_Cmd(DISABLE/ENABLE) works correctly. */
+    CLK_PeripheralClockConfig(CLK_PERIPHERAL_I2C, ENABLE);
+    GPIO_Init(GPIOB, GPIO_PIN_4, GPIO_MODE_OUT_OD_HIZ_FAST);
+    GPIO_Init(GPIOB, GPIO_PIN_5, GPIO_MODE_OUT_OD_HIZ_FAST);
+    I2C_Init(100000, 0xA0, I2C_DUTYCYCLE_2, I2C_ACK_CURR,
+             I2C_ADDMODE_7BIT, 16);
+    I2C_Cmd(ENABLE);
+
     /* Initialize GN1640T driver */
     GN1640_Init();
 

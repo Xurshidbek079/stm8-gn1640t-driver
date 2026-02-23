@@ -182,27 +182,25 @@
   uint8_t GN1640_GetCharMask(char ch, uint16_t* mask);
   
   /*============================================================================*/
-  /* LOW-LEVEL COMMUNICATION FUNCTIONS                                          */
+  /* COMMUNICATION FUNCTIONS                                                    */
   /*============================================================================*/
-  
+
   /**
-   * @brief Send start condition
+   * @brief Send one GN1640T frame: START + data[0..len-1] + STOP (LSB-first)
+   * @param data: Pointer to byte array
+   * @param len:  Number of bytes to send
+   *
+   * GN1640T requires separate frames per command:
+   *   {0x40}               data set (auto address increment)
+   *   {0xC0, grid[0..15]}  address 0 + 16 grid bytes
+   *   {0x8F}               display ON, max brightness
+   *
+   * Note: Start/Stop/WriteByte are internal. Use WriteFrame or SendCommand.
    */
-  void GN1640_Start(void);
-  
+  void GN1640_WriteFrame(uint8_t *data, uint8_t len);
+
   /**
-   * @brief Send stop condition
-   */
-  void GN1640_Stop(void);
-  
-  /**
-   * @brief Write a byte to GN1640T (LSB first)
-   * @param data: Byte to write
-   */
-  void GN1640_WriteByte(uint8_t data);
-  
-  /**
-   * @brief Send command to GN1640T
+   * @brief Send a single-byte command frame (convenience wrapper)
    * @param cmd: Command byte
    */
   void GN1640_SendCommand(uint8_t cmd);
